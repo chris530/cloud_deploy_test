@@ -1,4 +1,3 @@
----
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -7,9 +6,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: oci://ghcr.io/chris530/charts
-    chart: chris-nginx
-    targetRevision: 0.1.0
+    repoURL: https://github.com/chris530/github_actions.git
+    targetRevision: main
+    path: helm/chris-nginx
   destination:
     server: https://kubernetes.default.svc
     namespace: old
