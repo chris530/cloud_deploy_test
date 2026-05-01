@@ -1,5 +1,4 @@
-# .github/workflows/publish-helm-chart.yaml
-name: Publish Helm Chart to GHCR
+name: Publish Helm Charts to GHCR
 
 on:
   push:
@@ -30,12 +29,22 @@ jobs:
             --username "${{ github.actor }}" \
             --password-stdin
 
-      - name: Package Helm chart
+      - name: Lint, package, and push Helm charts
         run: |
-          helm lint ./helm
-          helm package ./helm --destination ./dist
+          set -euo pipefail
 
-      - name: Push Helm chart to GHCR
-        run: |
-          CHART_PACKAGE=$(ls ./dist/*.tgz)
-          helm push "$CHART_PACKAGE" oci://ghcr.io/chris530/charts
+          mkdir -p ./dist
+
+          for chart in ./helm/*; do
+            if [ -f "$chart/Chart.yaml" ]; then
+              echo "Processing chart: $chart"
+
+              helm lint "$chart"
+              helm package "$chart" --destination ./dist
+
+              CHART_PACKAGE=$(find ./dist -maxdepth 1 -name "*.tgz" -newer "$chart/Chart.yaml" | head -n 1)
+
+              echo "Pushing package: $CHART_PACKAGE"
+              helm push "$CHART_PACKAGE" oci://ghcr.io/chris530/charts
+            fi
+          done
