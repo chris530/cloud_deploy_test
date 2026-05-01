@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/chris530/github_actions.git
+    repoURL: https://github.com/chris530/cloud_deploy_test.git
     targetRevision: main
     path: helm/chris-nginx
   destination:
